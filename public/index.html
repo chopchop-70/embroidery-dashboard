@@ -112,13 +112,13 @@
         <div class="chart-wrap" style="height:200px"><canvas id="monEffChart" role="img" aria-label="Monthly efficiency"></canvas></div>
       </div>
       <div class="section">
-        <div class="section-header"><span class="section-title">Pieces by month</span></div>
+        <div class="section-header"><span class="section-title">Avg pieces per day by month</span></div>
         <div class="legend">
           <span><span class="sw" style="background:var(--blue)"></span>6-head</span>
           <span><span class="sw" style="background:var(--teal)"></span>4-head</span>
           <span><span class="sw-dash" style="background:var(--amber)"></span>trend</span>
         </div>
-        <div class="chart-wrap" style="height:200px"><canvas id="piecesChart" role="img" aria-label="Monthly pieces"></canvas></div>
+        <div class="chart-wrap" style="height:200px"><canvas id="piecesChart" role="img" aria-label="Monthly avg pieces per day"></canvas></div>
       </div>
     </div>
 
@@ -324,19 +324,20 @@ function renderMonthly() {
     const p = d.match(/^(\w+)\s+\d+\s+(\d{4})/);
     return p ? p[1]+' '+p[2] : '?';
   }
-  const me6={}, me4={}, mp6={}, mp4={}, mt6={}, mt4={};
-  MONTHS.forEach(m => { me6[m]=[]; me4[m]=[]; mp6[m]=0; mp4[m]=0; mt6[m]=0; mt4[m]=0; });
+  const me6={}, me4={}, mp6={}, mp4={}, mc6={}, mc4={}, mt6={}, mt4={};
+  MONTHS.forEach(m => { me6[m]=[]; me4[m]=[]; mp6[m]=0; mp4[m]=0; mc6[m]=0; mc4[m]=0; mt6[m]=0; mt4[m]=0; });
   S.forEach(r => {
     const m = gm(r.date);
     if (!MONTHS.includes(m)) return;
-    if (r.machine==='6-head') { me6[m].push(r.efficiency); mp6[m]+=(r.pieces||0); mt6[m]+=(r.thread_breaks||0); }
-    else { me4[m].push(r.efficiency); mp4[m]+=(r.pieces||0); mt4[m]+=(r.thread_breaks||0); }
+    if (r.machine==='6-head') { me6[m].push(r.efficiency); mp6[m]+=(r.pieces||0); mc6[m]++; mt6[m]+=(r.thread_breaks||0); }
+    else { me4[m].push(r.efficiency); mp4[m]+=(r.pieces||0); mc4[m]++; mt4[m]+=(r.thread_breaks||0); }
   });
   const ml = MONTHS.map(m=>m.slice(0,3));
   const eff6v = MONTHS.map(m=>avg(me6[m])||null);
   const eff4v = MONTHS.map(m=>avg(me4[m])||null);
-  const pc6v  = MONTHS.map(m=>mp6[m]);
-  const pc4v  = MONTHS.map(m=>mp4[m]);
+  // Per-day average pieces (more honest than totals which vary by trading days)
+  const pc6v  = MONTHS.map(m=>mc6[m] ? Math.round(mp6[m]/mc6[m]) : 0);
+  const pc4v  = MONTHS.map(m=>mc4[m] ? Math.round(mp4[m]/mc4[m]) : 0);
   const tb6v  = MONTHS.map(m=>mt6[m]);
   const tb4v  = MONTHS.map(m=>mt4[m]);
 
