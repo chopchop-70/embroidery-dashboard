@@ -173,14 +173,14 @@
           </div>
           <div class="chart-wrap" style="height:185px"><canvas id="distChart" role="img" aria-label="Efficiency histogram"></canvas></div>
         </div>
-        <div class="section">
-          <div class="section-header"><span class="section-title">Monthly thread breaks</span></div>
+        <div class="section" style="margin-bottom:0">
+          <div class="section-header"><span class="section-title">Avg thread breaks per day</span></div>
           <div class="legend">
             <span><span class="sw" style="background:var(--blue)"></span>6-head</span>
             <span><span class="sw" style="background:var(--teal)"></span>4-head</span>
             <span><span class="sw-dash" style="background:var(--amber)"></span>trend</span>
           </div>
-          <div class="chart-wrap" style="height:150px"><canvas id="tbChart" role="img" aria-label="Monthly thread breaks"></canvas></div>
+          <div class="chart-wrap" style="height:150px"><canvas id="tbChart" role="img" aria-label="Monthly avg thread breaks per day"></canvas></div>
         </div>
       </div>
     </div>
@@ -338,8 +338,8 @@ function renderMonthly() {
   // Per-day average pieces (more honest than totals which vary by trading days)
   const pc6v  = MONTHS.map(m=>mc6[m] ? Math.round(mp6[m]/mc6[m]) : 0);
   const pc4v  = MONTHS.map(m=>mc4[m] ? Math.round(mp4[m]/mc4[m]) : 0);
-  const tb6v  = MONTHS.map(m=>mt6[m]);
-  const tb4v  = MONTHS.map(m=>mt4[m]);
+  const tb6v  = MONTHS.map(m=>mc6[m] ? Math.round(mt6[m]/mc6[m]*10)/10 : 0);
+  const tb4v  = MONTHS.map(m=>mc4[m] ? Math.round(mt4[m]/mc4[m]*10)/10 : 0);
 
   const opts = (yFmt) => ({ responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{ display:false } },
